@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>  ̉ı̣  ɥ        u        ʎ  ̣̂Ɐꓥ    o    ɐ S</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Glitch Project</title>
     <style>
         /* 1. TOÀN MÀN HÌNH NỀN GLITCH */
         body, html {
@@ -45,44 +45,18 @@
             animation: FadeToClear 6s forwards; 
         }
 
-        /* MÀN HÌNH NHẮC NHỞ XOAY NGANG ĐIỆN THOẠI */
-        .orientation-warning {
-            display: none; 
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #050505;
-            z-index: 9999; 
-            color: #ff0055;
-            font-size: 16px;
-            text-align: center;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            box-sizing: border-box;
-            padding: 30px;
-            letter-spacing: 1px;
-            line-height: 1.6;
-            text-shadow: 0 0 8px rgba(255, 0, 85, 0.6);
-            pointer-events: none; 
-        }
-
         /* 2. KHU VỰC HIỂN THỊ CẬU BÉ */
         .character-container {
             position: absolute;
-            bottom: 150px; 
-            height: 70vh;  
-            max-width: 90vw; 
+            bottom: 110px; 
+            height: 85vh; 
             z-index: 5;
             cursor: pointer;
             animation: CharacterMosh 1.5s infinite steps(2); 
-            display: flex;
-            justify-content: center;
         }
 
         .character-container img {
             height: 100%;
-            width: auto;
-            max-width: 100%;
             object-fit: contain;
             filter: contrast(120%) saturate(160%) drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
         }
@@ -91,7 +65,7 @@
         .textbox-container {
             position: absolute;
             bottom: 25px;
-            width: 90%; 
+            width: 85%;
             max-width: 800px;
             background: rgba(5, 5, 10, 0.9);
             border: 2px solid #550000;
@@ -121,40 +95,11 @@
             pointer-events: none;
         }
 
-        /* ====================================================
-           ĐIỀU KIỆN XOAY NGANG VÀ RESPONSIVE DI ĐỘNG
-           ==================================================== */
-        @media (pointer: coarse) and (orientation: portrait) {
-            .orientation-warning {
-                display: flex; 
-                pointer-events: auto; 
-            }
-        }
-
-        @media (pointer: coarse) and (orientation: landscape) {
-            .orientation-warning {
-                display: none;
-                pointer-events: none; 
-            }
-            .character-container {
-                height: 52vh;
-                bottom: 105px;
-            }
-            .textbox-container {
-                bottom: 10px;
-                min-height: 80px;
-                padding: 10px;
-            }
-            .text-content {
-                font-size: 14px;
-            }
-        }
-
         /* ANIMAION KEYFRAMES */
         @keyframes FadeToClear {
             0% { opacity: 1; }   
             70% { opacity: 1; } 
-            100% { opacity: 0; visibility: hidden; } 
+            100% { opacity: 0; } 
         }
 
         @keyframes NoiseFlicker {
@@ -175,21 +120,12 @@
 </head>
 <body>
 
-    <!-- Lớp phủ tối hù nguyên màn hình lúc đầu -->
     <div class="black-screen-overlay"></div>
 
-    <!-- Màn hình nhắc nhở xoay ngang -->
-    <div class="orientation-warning">
-        <div>Vui lòng xoay ngang màn hình điện thoại để có trải nghiệm tốt nhất...</div>
-        <div style="font-size: 11px; color: #555; margin-top: 15px;">(Mẹo: Nếu mở trong Messenger, hãy bấm dấu 3 chấm góc trên chọn "Mở bằng trình duyệt hệ thống" để nghe được nhạc nền)</div>
-    </div>
-
-    <!-- Khu vực nhân vật -->
     <div class="character-container" id="characterBox">
         <img id="boyImg" src="cau-be-binh-thuong.png" alt="Boy">
     </div>
 
-    <!-- Khung thoại Visual Novel -->
     <div class="textbox-container" id="textBox">
         <div class="text-content" id="dialogueText" style="color: #444; font-size: 14px; text-align: center;">[ Bấm vào đây để kết nối tín hiệu ]</div>
     </div>
@@ -224,10 +160,7 @@
 
         function fadeInAudio(audioElement, duration) {
             audioElement.volume = 0; 
-            // Sử dụng cơ chế chạy ngầm cô lập lệnh lỗi âm thanh để không làm đứng chữ cốt truyện
-            audioElement.play().catch(err => {
-                console.log("Trình duyệt ứng dụng chặn âm thanh tự động. Hãy mở bằng Safari/Chrome.");
-            });
+            audioElement.play().catch(err => console.log("Cần tương tác"));
             
             let start = null;
             function step(timestamp) {
@@ -242,14 +175,13 @@
             window.requestAnimationFrame(step);
         }
 
-        // BÁM KHUNG CHAT ĐÃ ĐƯỢC CỨU HOÀN TOÀN KHÔNG SỢ BỊ KHÓA LỆNH
         textBox.addEventListener('click', (e) => {
             if (isDead) return;
             e.stopPropagation(); 
 
             if (currentStep === -1) {
                 dialogueText.removeAttribute('style'); 
-                fadeInAudio(bgMusic, 4000); // Thử bật nhạc ngầm, nếu lỗi app chặn thì web bỏ qua chạy tiếp chữ luôn
+                fadeInAudio(bgMusic, 4000); 
                 currentStep = 0;
                 dialogueText.innerText = dialogues[currentStep];
                 return;
@@ -261,20 +193,97 @@
             }
         });
 
-        // HỆ THỐNG CHỚP MẮT 3 ẢNH
+        /* MÀN HÌNH NHẮC NHỞ XOAY NGANG ĐIỆN THOẠI */
+        .orientation-warning {
+            display: none; 
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #050505;
+            z-index: 9999; 
+            color: #ff0055;
+            font-size: 16px;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            box-sizing: border-box;
+            padding: 30px;
+            letter-spacing: 1px;
+            line-height: 1.6;
+            text-shadow: 0 0 8px rgba(255, 0, 85, 0.6);
+            pointer-events: none; 
+        }
+
+        // ====================================================
+        // HỆ THỐNG CHỚP MẮT 3 ẢNH LIÊN TỤC KHI ĐANG SỐNG [1]
+        // ====================================================
         setInterval(() => {
             if (isDead) return;
+
+            // Bước 1: Nhắm mắt hờ (Ảnh chớp 1) [1]
             boyImg.src = "chop-mat-1.png"; 
+
+            // Bước 2: Nhắm hẳn mắt lại sau 80ms (Ảnh chớp 2) [1]
             setTimeout(() => {
                 if (!isDead) boyImg.src = "chop-mat-2.png"; 
             }, 80);
+
+            // Bước 3: Mở hé mắt ra sau 160ms (Ảnh chớp 1) [1]
             setTimeout(() => {
                 if (!isDead) boyImg.src = "chop-mat-1.png"; 
             }, 160);
+
+            // Bước 4: Mở mắt hoàn toàn sau 240ms (Ảnh bình thường) [1]
             setTimeout(() => {
                 if (!isDead) boyImg.src = "cau-be-binh-thuong.png"; 
             }, 240);
-        }, 3000); 
+
+        }, 3000); // Cứ mỗi 3 giây thực hiện vòng lặp chớp mắt mượt này 1 lần [1]
 
         // SỰ KIỆN KHI BẤM CHẾT
         characterBox.addEventListener('click', (e) => {
+            if (currentStep !== dialogues.length - 1 || isDead) return;
+            isDead = true;
+            e.stopPropagation(); 
+
+            bgMusic.pause();
+            bgMusic.volume = 0;
+            bgMusic.currentTime = 0; 
+
+            flash.style.display = 'block';
+            setTimeout(() => { flash.style.display = 'none'; }, 300);
+
+            // Giữ cố định ảnh nhắm hẳn mắt khi chết [1]
+            boyImg.src = "chop-mat-2.png"; 
+            document.body.style.backgroundImage = "url('nen-luc-chet.png')";
+
+            characterBox.style.animation = "none";
+            document.body.style.animation = "none";
+
+            dialogueText.innerText = "";
+            let finalLine = "Đây là thực tại...";
+            let charIndex = 0;
+
+            function typeWriter() {
+                if (charIndex < finalLine.length) {
+                    dialogueText.innerText += finalLine.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, 150); 
+                } else {
+                    setTimeout(() => {
+                        canRedirect = true;
+                        dialogueText.innerHTML += "<br><span style='font-size:12px;color:#666;'>(Bấm bất kỳ đâu để tiếp tục)</span>";
+                    }, 1000);
+                }
+            }
+            setTimeout(typeWriter, 500);
+        });
+
+        document.body.addEventListener('click', () => {
+            if (canRedirect) {
+                window.location.href = "#"; 
+            }
+        });
+    </script>
+</body>
+</html>
