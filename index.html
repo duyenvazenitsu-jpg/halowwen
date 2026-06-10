@@ -47,11 +47,11 @@
 
         /* MÀN HÌNH NHẮC NHỞ XOAY NGANG ĐIỆN THOẠI */
         .orientation-warning {
-            display: none; /* Mặc định luôn ẩn trên máy tính */
+            display: none; 
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #050505;
-            z-index: 9999; /* Đè lên tuyệt đối mọi thứ */
+            z-index: 9999; 
             color: #ff0055;
             font-size: 16px;
             text-align: center;
@@ -63,15 +63,10 @@
             letter-spacing: 1px;
             line-height: 1.6;
             text-shadow: 0 0 8px rgba(255, 0, 85, 0.6);
+            pointer-events: none; /* Mặc định tắt tương tác chặn click */
         }
 
-        .phone-icon {
-            font-size: 40px;
-            margin-bottom: 20px;
-            animation: rotatePhone 2s infinite ease-in-out;
-        }
-
-        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ (CẤU HÌNH GỐC / KHI XOAY NGANG) */
+        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ */
         .character-container {
             position: absolute;
             bottom: 150px; 
@@ -127,18 +122,23 @@
         }
 
         /* ====================================================
-           SỬA LỖI: BỘ DIỄN HOẠT CHẶN XOAY NGANG CHUẨN XÁC DI ĐỘNG
+           ĐIỀU KIỆN XOAY NGANG VÀ SỬA LỖI CLICK CHẶN CHUỘT
            ==================================================== */
         
-        /* Kiểm tra: nếu là thiết bị cảm ứng (di động) VÀ đang ở chế độ DỌC */
+        /* Khi mở máy dọc: Bật bảng thông báo và khóa không cho click bậy bạ ra sau */
         @media (pointer: coarse) and (orientation: portrait) {
             .orientation-warning {
-                display: flex; /* Hiện bảng thông báo chặn màn hình dọc lại */
+                display: flex; 
+                pointer-events: auto; /* Bật chặn click khi máy đang dọc */
             }
         }
 
-        /* Cấu hình phụ thu nhỏ giao diện khi điện thoại đã xoay NGANG */
+        /* Khi mở máy ngang: Thu nhỏ giao diện và xả khóa click chuột hoàn toàn */
         @media (pointer: coarse) and (orientation: landscape) {
+            .orientation-warning {
+                display: none;
+                pointer-events: none; /* Xả khóa tàng hình để click mượt */
+            }
             .character-container {
                 height: 52vh;
                 bottom: 105px;
@@ -154,12 +154,6 @@
         }
 
         /* ANIMAION KEYFRAMES */
-        @keyframes rotatePhone {
-            0% { transform: rotate(0deg); }
-            50% { transform: rotate(-90deg); }
-            100% { transform: rotate(0deg); }
-        }
-
         @keyframes FadeToClear {
             0% { opacity: 1; }   
             70% { opacity: 1; } 
@@ -184,9 +178,8 @@
 </head>
 <body>
 
-    <!-- Màn hình nhắc nhở xoay ngang điện thoại -->
+    <!-- Màn hình nhắc nhở xoay ngang (Đã xóa Icon vòng xoay) -->
     <div class="orientation-warning">
-        <div class="phone-icon">🔄</div>
         <div>Vui lòng xoay ngang màn hình điện thoại để có trải nghiệm tốt nhất...</div>
     </div>
 
@@ -286,3 +279,8 @@
 
             bgMusic.pause();
             bgMusic.volume = 0;
+            bgMusic.currentTime = 0; 
+
+            flash.style.display = 'block';
+            setTimeout(() => { flash.style.display = 'none'; }, 300);
+
