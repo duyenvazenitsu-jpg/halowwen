@@ -47,11 +47,11 @@
 
         /* MÀN HÌNH NHẮC NHỞ XOAY NGANG ĐIỆN THOẠI */
         .orientation-warning {
-            display: none; /* Mặc định ẩn trên máy tính */
+            display: none; /* Mặc định luôn ẩn trên máy tính */
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #050505;
-            z-index: 9999; /* Nằm trên cùng chặn mọi thao tác */
+            z-index: 9999; /* Đè lên tuyệt đối mọi thứ */
             color: #ff0055;
             font-size: 16px;
             text-align: center;
@@ -65,14 +65,13 @@
             text-shadow: 0 0 8px rgba(255, 0, 85, 0.6);
         }
 
-        /* Biểu tượng điện thoại tự xoay ngộ nghĩnh/ma mị */
         .phone-icon {
             font-size: 40px;
             margin-bottom: 20px;
             animation: rotatePhone 2s infinite ease-in-out;
         }
 
-        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ (ĐÃ FIX TỈ LỆ KHÔNG CHO TO ĐÙNG) */
+        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ (CẤU HÌNH GỐC / KHI XOAY NGANG) */
         .character-container {
             position: absolute;
             bottom: 150px; 
@@ -128,16 +127,18 @@
         }
 
         /* ====================================================
-           ĐIỀU KIỆN KÍCH HOẠT MÀN HÌNH NHẮC XOAY NGANG
+           SỬA LỖI: BỘ DIỄN HOẠT CHẶN XOAY NGANG CHUẨN XÁC DI ĐỘNG
            ==================================================== */
-        @media screen and (max-width: 768px) and (orientation: portrait) {
+        
+        /* Kiểm tra: nếu là thiết bị cảm ứng (di động) VÀ đang ở chế độ DỌC */
+        @media (pointer: coarse) and (orientation: portrait) {
             .orientation-warning {
-                display: flex; /* Chỉ hiện lên khi dùng điện thoại ở trạng thái DỌC */
+                display: flex; /* Hiện bảng thông báo chặn màn hình dọc lại */
             }
         }
 
-        /* Tối ưu một chút cho màn hình ngang điện thoại */
-        @media screen and (max-width: 900px) and (orientation: landscape) {
+        /* Cấu hình phụ thu nhỏ giao diện khi điện thoại đã xoay NGANG */
+        @media (pointer: coarse) and (orientation: landscape) {
             .character-container {
                 height: 52vh;
                 bottom: 105px;
@@ -284,3 +285,4 @@
             e.stopPropagation(); 
 
             bgMusic.pause();
+            bgMusic.volume = 0;
