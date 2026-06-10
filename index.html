@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Tiêu đề chữ ngược ma mị của bạn -->
     <title>  ̉ı̣  ɥ        u        ʎ  ̣̂Ɐꓥ    o    ɐ S</title>
     <style>
         /* 1. TOÀN MÀN HÌNH NỀN GLITCH */
@@ -46,12 +45,12 @@
             animation: FadeToClear 6s forwards; 
         }
 
-        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ (ĐÃ TỐI ƯU CHO ĐIỆN THOẠI) */
+        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ */
         .character-container {
             position: absolute;
-            bottom: 150px; /* Đẩy lên trên khung chat */
+            bottom: 150px; 
             height: 70vh;  /* Chiều cao chuẩn trên máy tính */
-            max-width: 90vw; /* Giới hạn không cho tràn viền điện thoại */
+            max-width: 90vw; 
             z-index: 5;
             cursor: pointer;
             animation: CharacterMosh 1.5s infinite steps(2); 
@@ -71,7 +70,7 @@
         .textbox-container {
             position: absolute;
             bottom: 25px;
-            width: 90%; /* Tăng độ rộng một chút trên di động cho dễ đọc */
+            width: 90%; 
             max-width: 800px;
             background: rgba(5, 5, 10, 0.9);
             border: 2px solid #550000;
@@ -102,15 +101,15 @@
         }
 
         /* ====================================================
-           BỘ ĐIỀU CHỈNH RIÊNG CHO MÀN HÌNH ĐIỆN THOẠI (RESPONSIVE)
+           BỘ ĐIỀU CHỈNH RIÊNG CHO MÀN HÌNH ĐIỆN THOẠI (ĐÃ ĐẨY CẬU BÉ TO LÊN TÍ)
            ==================================================== */
         @media screen and (max-width: 768px) {
             .character-container {
-                height: 50vh; /* Giảm chiều cao trên điện thoại để không bị phóng to quá mức */
-                bottom: 160px;
+                height: 62vh; /* Thay vì 50vh, tăng lên 62vh để cậu bé nhìn vừa vặn, không bị quá bé */
+                bottom: 145px; /* Hạ thấp vị trí xuống một chút cho cân đối với khung chat di động */
             }
             .text-content {
-                font-size: 15px; /* Giảm size chữ khung chat một chút cho vừa màn hình nhỏ */
+                font-size: 15px; 
             }
             .textbox-container {
                 min-height: 100px;
