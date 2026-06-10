@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sa    o v ậy    n   h ỉ</title>
+    <title>Visual Glitch Project</title>
     <style>
         /* 1. TOÀN MÀN HÌNH NỀN GLITCH */
         body, html {
@@ -35,14 +35,14 @@
             pointer-events: none;
         }
 
-        /* LỚP PHỦ TOÀN MÀN HÌNH: Đã kéo dài thời gian bóng tối lên 6 giây */
+        /* LỚP PHỦ TOÀN MÀN HÌNH: Tối thui 6 giây rồi sáng rõ dần */
         .black-screen-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000000;
             z-index: 100; 
             pointer-events: none; 
-            animation: FadeToClear 6s forwards; /* Tăng từ 4s lên 6s để tối lâu hơn */
+            animation: FadeToClear 6s forwards; 
         }
 
         /* 2. KHU VỰC HIỂN THỊ CẬU BÉ */
@@ -95,12 +95,10 @@
             pointer-events: none;
         }
 
-        /* ====================================================
-           CÁC ĐOẠN HIỆU ỨNG CHUYỂN ĐỘNG (ANIMATION KEYFRAMES)
-           ==================================================== */
+        /* ANIMAION KEYFRAMES */
         @keyframes FadeToClear {
             0% { opacity: 1; }   
-            70% { opacity: 1; } /* Giữ màn hình đen thui lâu hơn trước khi bắt đầu mờ dần */
+            70% { opacity: 1; } 
             100% { opacity: 0; } 
         }
 
@@ -128,7 +126,6 @@
         <img id="boyImg" src="cau-be-binh-thuong.png" alt="Boy">
     </div>
 
-    <!-- Khung thoại Visual Novel (Đã loại bỏ chữ Đang tải) -->
     <div class="textbox-container" id="textBox">
         <div class="text-content" id="dialogueText" style="color: #444; font-size: 14px; text-align: center;">[ Bấm vào đây để kết nối tín hiệu ]</div>
     </div>
@@ -161,10 +158,9 @@
         const flash = document.getElementById('flash');
         const bgMusic = document.getElementById('bgMusic');
 
-        // Hàm xử lý tăng âm lượng nhạc từ từ (Fade-in Audio)
         function fadeInAudio(audioElement, duration) {
-            audioElement.volume = 0; // Bắt đầu từ im lặng
-            audioElement.play().catch(err => console.log("Cần tương tác người dùng"));
+            audioElement.volume = 0; 
+            audioElement.play().catch(err => console.log("Cần tương tác"));
             
             let start = null;
             function step(timestamp) {
@@ -179,15 +175,13 @@
             window.requestAnimationFrame(step);
         }
 
-        // Click tương tác khung chat
         textBox.addEventListener('click', (e) => {
             if (isDead) return;
             e.stopPropagation(); 
 
-            // Kích hoạt nhạc tự tăng volume ở lần bấm đầu tiên
             if (currentStep === -1) {
-                dialogueText.removeAttribute('style'); // Xóa căn giữa và màu xám của dòng hướng dẫn
-                fadeInAudio(bgMusic, 4000); // Tăng dần âm lượng lên mức tối đa trong 4 giây (4000ms)
+                dialogueText.removeAttribute('style'); 
+                fadeInAudio(bgMusic, 4000); 
                 currentStep = 0;
                 dialogueText.innerText = dialogues[currentStep];
                 return;
@@ -199,14 +193,31 @@
             }
         });
 
-        // HỆ THỐNG CHỚP MẮT LÚC SỐNG
+        // ====================================================
+        // HỆ THỐNG CHỚP MẮT 3 ẢNH LIÊN TỤC KHI ĐANG SỐNG [1]
+        // ====================================================
         setInterval(() => {
             if (isDead) return;
+
+            // Bước 1: Nhắm mắt hờ (Ảnh chớp 1) [1]
             boyImg.src = "chop-mat-1.png"; 
+
+            // Bước 2: Nhắm hẳn mắt lại sau 80ms (Ảnh chớp 2) [1]
+            setTimeout(() => {
+                if (!isDead) boyImg.src = "chop-mat-2.png"; 
+            }, 80);
+
+            // Bước 3: Mở hé mắt ra sau 160ms (Ảnh chớp 1) [1]
+            setTimeout(() => {
+                if (!isDead) boyImg.src = "chop-mat-1.png"; 
+            }, 160);
+
+            // Bước 4: Mở mắt hoàn toàn sau 240ms (Ảnh bình thường) [1]
             setTimeout(() => {
                 if (!isDead) boyImg.src = "cau-be-binh-thuong.png"; 
-            }, 120);
-        }, 3000); 
+            }, 240);
+
+        }, 3000); // Cứ mỗi 3 giây thực hiện vòng lặp chớp mắt mượt này 1 lần [1]
 
         // SỰ KIỆN KHI BẤM CHẾT
         characterBox.addEventListener('click', (e) => {
@@ -214,7 +225,6 @@
             isDead = true;
             e.stopPropagation(); 
 
-            // Tắt nhạc ngay lập tức
             bgMusic.pause();
             bgMusic.volume = 0;
             bgMusic.currentTime = 0; 
@@ -222,7 +232,8 @@
             flash.style.display = 'block';
             setTimeout(() => { flash.style.display = 'none'; }, 300);
 
-            boyImg.src = "chop-mat-2.png";
+            // Giữ cố định ảnh nhắm hẳn mắt khi chết [1]
+            boyImg.src = "chop-mat-2.png"; 
             document.body.style.backgroundImage = "url('nen-luc-chet.png')";
 
             characterBox.style.animation = "none";
@@ -247,7 +258,6 @@
             setTimeout(typeWriter, 500);
         });
 
-        // SỰ KIỆN BẤM BẤT KỲ ĐÂU ĐỂ CHUYỂN TRANG
         document.body.addEventListener('click', () => {
             if (canRedirect) {
                 window.location.href = "#"; 
