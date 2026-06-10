@@ -41,7 +41,7 @@
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000000;
             z-index: 100; 
-            pointer-events: none; 
+            pointer-events: none; /* Ép buộc không được chặn click chuột của người chơi */
             animation: FadeToClear 6s forwards; 
         }
 
@@ -63,7 +63,7 @@
             letter-spacing: 1px;
             line-height: 1.6;
             text-shadow: 0 0 8px rgba(255, 0, 85, 0.6);
-            pointer-events: none; /* Mặc định tắt tương tác chặn click */
+            pointer-events: none; 
         }
 
         /* 2. KHU VỰC HIỂN THỊ CẬU BÉ */
@@ -122,22 +122,19 @@
         }
 
         /* ====================================================
-           ĐIỀU KIỆN XOAY NGANG VÀ SỬA LỖI CLICK CHẶN CHUỘT
+           ĐIỀU KIỆN XOAY NGANG VÀ RESPONSIVE DI ĐỘNG
            ==================================================== */
-        
-        /* Khi mở máy dọc: Bật bảng thông báo và khóa không cho click bậy bạ ra sau */
         @media (pointer: coarse) and (orientation: portrait) {
             .orientation-warning {
                 display: flex; 
-                pointer-events: auto; /* Bật chặn click khi máy đang dọc */
+                pointer-events: auto; /* Chặn click khi điện thoại đang để dọc */
             }
         }
 
-        /* Khi mở máy ngang: Thu nhỏ giao diện và xả khóa click chuột hoàn toàn */
         @media (pointer: coarse) and (orientation: landscape) {
             .orientation-warning {
                 display: none;
-                pointer-events: none; /* Xả khóa tàng hình để click mượt */
+                pointer-events: none; /* Xả khóa khi xoay ngang */
             }
             .character-container {
                 height: 52vh;
@@ -157,7 +154,7 @@
         @keyframes FadeToClear {
             0% { opacity: 1; }   
             70% { opacity: 1; } 
-            100% { opacity: 0; } 
+            100% { opacity: 0; visibility: hidden; } /* Thêm thuộc tính ẩn hẳn hoàn toàn khi kết thúc 6 giây */
         }
 
         @keyframes NoiseFlicker {
@@ -178,17 +175,20 @@
 </head>
 <body>
 
-    <!-- Màn hình nhắc nhở xoay ngang (Đã xóa Icon vòng xoay) -->
+    <!-- Lớp phủ tối hù nguyên màn hình lúc đầu -->
+    <div class="black-screen-overlay"></div>
+
+    <!-- Màn hình nhắc nhở xoay ngang -->
     <div class="orientation-warning">
         <div>Vui lòng xoay ngang màn hình điện thoại để có trải nghiệm tốt nhất...</div>
     </div>
 
-    <div class="black-screen-overlay"></div>
-
+    <!-- Khu vực nhân vật -->
     <div class="character-container" id="characterBox">
         <img id="boyImg" src="cau-be-binh-thuong.png" alt="Boy">
     </div>
 
+    <!-- Khung thoại Visual Novel -->
     <div class="textbox-container" id="textBox">
         <div class="text-content" id="dialogueText" style="color: #444; font-size: 14px; text-align: center;">[ Bấm vào đây để kết nối tín hiệu ]</div>
     </div>
@@ -238,6 +238,7 @@
             window.requestAnimationFrame(step);
         }
 
+        // HỆ THỐNG CLICK KHUNG CHAT (ĐÃ ĐƯỢC XẢ KHÓA HOÀN TOÀN)
         textBox.addEventListener('click', (e) => {
             if (isDead) return;
             e.stopPropagation(); 
