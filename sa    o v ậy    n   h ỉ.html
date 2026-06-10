@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sa    o v ậy    n   h ỉ</title>
+    <style>
+        /* 1. TOÀN MÀN HÌNH NỀN GLITCH */
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background-color: #000;
+            background-image: url('nen-nhieu.gif'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: repeat;
+            animation: NoiseFlicker 0.1s infinite;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; 
+            overflow: hidden;
+            position: relative;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Lớp sọc ngang Tivi quét qua màn hình */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.1), rgba(0, 255, 0, 0.05), rgba(0, 0, 255, 0.1));
+            z-index: 10;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* LỚP PHỦ TOÀN MÀN HÌNH: Đã kéo dài thời gian bóng tối lên 6 giây */
+        .black-screen-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000000;
+            z-index: 100; 
+            pointer-events: none; 
+            animation: FadeToClear 6s forwards; /* Tăng từ 4s lên 6s để tối lâu hơn */
+        }
+
+        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ */
+        .character-container {
+            position: absolute;
+            bottom: 110px; 
+            height: 85vh; 
+            z-index: 5;
+            cursor: pointer;
+            animation: CharacterMosh 1.5s infinite steps(2); 
+        }
+
+        .character-container img {
+            height: 100%;
+            object-fit: contain;
+            filter: contrast(120%) saturate(160%) drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
+        }
+
+        /* 3. KHUNG CHAT KIỂU VISUAL NOVEL */
+        .textbox-container {
+            position: absolute;
+            bottom: 25px;
+            width: 85%;
+            max-width: 800px;
+            background: rgba(5, 5, 10, 0.9);
+            border: 2px solid #550000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 15;
+            min-height: 110px;
+            cursor: pointer;
+        }
+
+        .text-content {
+            color: #d1d1d1;
+            font-size: 18px;
+            line-height: 1.5;
+            text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+        }
+
+        /* Màn hình chớp đỏ giật khi chết */
+        .blood-flash {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(255, 0, 0, 0.9);
+            z-index: 99;
+            display: none;
+            pointer-events: none;
+        }
+
+        /* ====================================================
+           CÁC ĐOẠN HIỆU ỨNG CHUYỂN ĐỘNG (ANIMATION KEYFRAMES)
+           ==================================================== */
+        @keyframes FadeToClear {
+            0% { opacity: 1; }   
+            70% { opacity: 1; } /* Giữ màn hình đen thui lâu hơn trước khi bắt đầu mờ dần */
+            100% { opacity: 0; } 
+        }
+
+        @keyframes NoiseFlicker {
+            0% { opacity: 0.95; }
+            50% { opacity: 1; }
+            100% { opacity: 0.93; }
+        }
+
+        @keyframes CharacterMosh {
+            0% { transform: translate(0, 0) skewX(0deg); filter: hue-rotate(0deg); }
+            20% { transform: translate(-2px, 1px) skewX(1deg); filter: hue-rotate(10deg); }
+            40% { transform: translate(2px, -1px); filter: hue-rotate(-5deg); }
+            60% { transform: translate(-1px, -1px); }
+            80% { transform: translate(1px, 2px) filter: hue-rotate(20deg); }
+            100% { transform: translate(0, 0) skewX(0deg); filter: hue-rotate(0deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="black-screen-overlay"></div>
+
+    <div class="character-container" id="characterBox">
+        <img id="boyImg" src="cau-be-binh-thuong.png" alt="Boy">
+    </div>
+
+    <!-- Khung thoại Visual Novel (Đã loại bỏ chữ Đang tải) -->
+    <div class="textbox-container" id="textBox">
+        <div class="text-content" id="dialogueText" style="color: #444; font-size: 14px; text-align: center;">[ Bấm vào đây để kết nối tín hiệu ]</div>
+    </div>
+
+    <div class="blood-flash" id="flash"></div>
+
+    <audio id="bgMusic" src="nhac-nen.mp3" loop></audio>
+
+    <script>
+        const imagesToPreload = ["cau-be-binh-thuong.png", "chop-mat-1.png", "chop-mat-2.png", "nen-luc-chet.png"];
+        imagesToPreload.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+
+        const dialogues = [
+            "Ồ... cậu ấy bị sao vậy nhỉ?",
+            "Hình như cậu ấy không còn ở thế giới này nữa...",
+            "Bấm vào cậu ấy để trở về thực tại."
+        ];
+
+        let currentStep = -1; 
+        let isDead = false;
+        let canRedirect = false; 
+
+        const dialogueText = document.getElementById('dialogueText');
+        const textBox = document.getElementById('textBox');
+        const characterBox = document.getElementById('characterBox');
+        const boyImg = document.getElementById('boyImg');
+        const flash = document.getElementById('flash');
+        const bgMusic = document.getElementById('bgMusic');
+
+        // Hàm xử lý tăng âm lượng nhạc từ từ (Fade-in Audio)
+        function fadeInAudio(audioElement, duration) {
+            audioElement.volume = 0; // Bắt đầu từ im lặng
+            audioElement.play().catch(err => console.log("Cần tương tác người dùng"));
+            
+            let start = null;
+            function step(timestamp) {
+                if (!start) start = timestamp;
+                let progress = timestamp - start;
+                let volume = Math.min(progress / duration, 1);
+                audioElement.volume = volume;
+                if (progress < duration && !isDead) {
+                    window.requestAnimationFrame(step);
+                }
+            }
+            window.requestAnimationFrame(step);
+        }
+
+        // Click tương tác khung chat
+        textBox.addEventListener('click', (e) => {
+            if (isDead) return;
+            e.stopPropagation(); 
+
+            // Kích hoạt nhạc tự tăng volume ở lần bấm đầu tiên
+            if (currentStep === -1) {
+                dialogueText.removeAttribute('style'); // Xóa căn giữa và màu xám của dòng hướng dẫn
+                fadeInAudio(bgMusic, 4000); // Tăng dần âm lượng lên mức tối đa trong 4 giây (4000ms)
+                currentStep = 0;
+                dialogueText.innerText = dialogues[currentStep];
+                return;
+            }
+
+            if (currentStep < dialogues.length - 1) {
+                currentStep++;
+                dialogueText.innerText = dialogues[currentStep];
+            }
+        });
+
+        // HỆ THỐNG CHỚP MẮT LÚC SỐNG
+        setInterval(() => {
+            if (isDead) return;
+            boyImg.src = "chop-mat-1.png"; 
+            setTimeout(() => {
+                if (!isDead) boyImg.src = "cau-be-binh-thuong.png"; 
+            }, 120);
+        }, 3000); 
+
+        // SỰ KIỆN KHI BẤM CHẾT
+        characterBox.addEventListener('click', (e) => {
+            if (currentStep !== dialogues.length - 1 || isDead) return;
+            isDead = true;
+            e.stopPropagation(); 
+
+            // Tắt nhạc ngay lập tức
+            bgMusic.pause();
+            bgMusic.volume = 0;
+            bgMusic.currentTime = 0; 
+
+            flash.style.display = 'block';
+            setTimeout(() => { flash.style.display = 'none'; }, 300);
+
+            boyImg.src = "chop-mat-2.png";
+            document.body.style.backgroundImage = "url('nen-luc-chet.png')";
+
+            characterBox.style.animation = "none";
+            document.body.style.animation = "none";
+
+            dialogueText.innerText = "";
+            let finalLine = "Đây là thực tại...";
+            let charIndex = 0;
+
+            function typeWriter() {
+                if (charIndex < finalLine.length) {
+                    dialogueText.innerText += finalLine.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, 150); 
+                } else {
+                    setTimeout(() => {
+                        canRedirect = true;
+                        dialogueText.innerHTML += "<br><span style='font-size:12px;color:#666;'>(Bấm bất kỳ đâu để tiếp tục)</span>";
+                    }, 1000);
+                }
+            }
+            setTimeout(typeWriter, 500);
+        });
+
+        // SỰ KIỆN BẤM BẤT KỲ ĐÂU ĐỂ CHUYỂN TRANG
+        document.body.addEventListener('click', () => {
+            if (canRedirect) {
+                window.location.href = "#"; 
+            }
+        });
+    </script>
+</body>
+</html>
