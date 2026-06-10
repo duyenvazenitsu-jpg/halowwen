@@ -41,7 +41,7 @@
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000000;
             z-index: 100; 
-            pointer-events: none; /* Ép buộc không được chặn click chuột của người chơi */
+            pointer-events: none; 
             animation: FadeToClear 6s forwards; 
         }
 
@@ -127,14 +127,14 @@
         @media (pointer: coarse) and (orientation: portrait) {
             .orientation-warning {
                 display: flex; 
-                pointer-events: auto; /* Chặn click khi điện thoại đang để dọc */
+                pointer-events: auto; 
             }
         }
 
         @media (pointer: coarse) and (orientation: landscape) {
             .orientation-warning {
                 display: none;
-                pointer-events: none; /* Xả khóa khi xoay ngang */
+                pointer-events: none; 
             }
             .character-container {
                 height: 52vh;
@@ -154,7 +154,7 @@
         @keyframes FadeToClear {
             0% { opacity: 1; }   
             70% { opacity: 1; } 
-            100% { opacity: 0; visibility: hidden; } /* Thêm thuộc tính ẩn hẳn hoàn toàn khi kết thúc 6 giây */
+            100% { opacity: 0; visibility: hidden; } 
         }
 
         @keyframes NoiseFlicker {
@@ -181,6 +181,7 @@
     <!-- Màn hình nhắc nhở xoay ngang -->
     <div class="orientation-warning">
         <div>Vui lòng xoay ngang màn hình điện thoại để có trải nghiệm tốt nhất...</div>
+        <div style="font-size: 11px; color: #555; margin-top: 15px;">(Mẹo: Nếu mở trong Messenger, hãy bấm dấu 3 chấm góc trên chọn "Mở bằng trình duyệt hệ thống" để nghe được nhạc nền)</div>
     </div>
 
     <!-- Khu vực nhân vật -->
@@ -223,7 +224,10 @@
 
         function fadeInAudio(audioElement, duration) {
             audioElement.volume = 0; 
-            audioElement.play().catch(err => console.log("Cần tương tác"));
+            // Sử dụng cơ chế chạy ngầm cô lập lệnh lỗi âm thanh để không làm đứng chữ cốt truyện
+            audioElement.play().catch(err => {
+                console.log("Trình duyệt ứng dụng chặn âm thanh tự động. Hãy mở bằng Safari/Chrome.");
+            });
             
             let start = null;
             function step(timestamp) {
@@ -238,14 +242,14 @@
             window.requestAnimationFrame(step);
         }
 
-        // HỆ THỐNG CLICK KHUNG CHAT (ĐÃ ĐƯỢC XẢ KHÓA HOÀN TOÀN)
+        // BÁM KHUNG CHAT ĐÃ ĐƯỢC CỨU HOÀN TOÀN KHÔNG SỢ BỊ KHÓA LỆNH
         textBox.addEventListener('click', (e) => {
             if (isDead) return;
             e.stopPropagation(); 
 
             if (currentStep === -1) {
                 dialogueText.removeAttribute('style'); 
-                fadeInAudio(bgMusic, 4000); 
+                fadeInAudio(bgMusic, 4000); // Thử bật nhạc ngầm, nếu lỗi app chặn thì web bỏ qua chạy tiếp chữ luôn
                 currentStep = 0;
                 dialogueText.innerText = dialogues[currentStep];
                 return;
@@ -274,14 +278,3 @@
 
         // SỰ KIỆN KHI BẤM CHẾT
         characterBox.addEventListener('click', (e) => {
-            if (currentStep !== dialogues.length - 1 || isDead) return;
-            isDead = true;
-            e.stopPropagation(); 
-
-            bgMusic.pause();
-            bgMusic.volume = 0;
-            bgMusic.currentTime = 0; 
-
-            flash.style.display = 'block';
-            setTimeout(() => { flash.style.display = 'none'; }, 300);
-
