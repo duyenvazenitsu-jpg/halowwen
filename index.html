@@ -45,11 +45,11 @@
             animation: FadeToClear 6s forwards; 
         }
 
-        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ */
+        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ (CẤU HÌNH GỐC CHO MÁY TÍNH) */
         .character-container {
             position: absolute;
             bottom: 150px; 
-            height: 70vh;  /* Chiều cao chuẩn trên máy tính */
+            height: 70vh;  
             max-width: 90vw; 
             z-index: 5;
             cursor: pointer;
@@ -101,12 +101,20 @@
         }
 
         /* ====================================================
-           BỘ ĐIỀU CHỈNH RIÊNG CHO MÀN HÌNH ĐIỆN THOẠI (ĐÃ ĐẨY CẬU BÉ TO LÊN TÍ)
+           HỆ THỐNG PHÂN GIẢI THÔNG MINH CHO DI ĐỘNG (DỌC VÀ NGANG)
            ==================================================== */
-        @media screen and (max-width: 768px) {
+
+        /* Trường hợp 1: Thiết bị màn hình nhỏ HOẶC đang để màn hình DỌC (Portrait) */
+        @media screen and (max-width: 768px), screen and (orientation: portrait) {
             .character-container {
-                height: 62vh; /* Thay vì 50vh, tăng lên 62vh để cậu bé nhìn vừa vặn, không bị quá bé */
-                bottom: 145px; /* Hạ thấp vị trí xuống một chút cho cân đối với khung chat di động */
+                width: 75vw;       /* Khống chế độ rộng vừa vặn 75% chiều ngang điện thoại dọc */
+                height: auto;      /* Chiều cao tự nén theo tỷ lệ ảnh gốc, không bị kéo giãn bành trướng */
+                bottom: 155px;     
+                top: auto;         
+            }
+            .character-container img {
+                width: 100%;       
+                height: auto;
             }
             .text-content {
                 font-size: 15px; 
@@ -114,6 +122,27 @@
             .textbox-container {
                 min-height: 100px;
                 padding: 15px;
+            }
+        }
+
+        /* Trường hợp 2: Điện thoại xoay NGANG (Landscape) */
+        @media screen and (max-width: 900px) and (orientation: landscape) {
+            .character-container {
+                height: 52vh;      /* Thu thấp chiều cao lại để đỉnh đầu không bị lút khỏi cạnh trên màn hình ngang */
+                width: auto;
+                bottom: 105px;     /* Ép sát xuống gần khung chat vì màn hình ngang rất hẹp chiều cao */
+            }
+            .character-container img {
+                height: 100%;
+                width: auto;
+            }
+            .textbox-container {
+                bottom: 10px;
+                min-height: 80px;
+                padding: 10px;
+            }
+            .text-content {
+                font-size: 14px;
             }
         }
 
@@ -250,29 +279,3 @@
             document.body.style.animation = "none";
 
             dialogueText.innerText = "";
-            let finalLine = "Đây là thực tại...";
-            let charIndex = 0;
-
-            function typeWriter() {
-                if (charIndex < finalLine.length) {
-                    dialogueText.innerText += finalLine.charAt(charIndex);
-                    charIndex++;
-                    setTimeout(typeWriter, 150); 
-                } else {
-                    setTimeout(() => {
-                        canRedirect = true;
-                        dialogueText.innerHTML += "<br><span style='font-size:12px;color:#666;'>(Bấm bất kỳ đâu để tiếp tục)</span>";
-                    }, 1000);
-                }
-            }
-            setTimeout(typeWriter, 500);
-        });
-
-        document.body.addEventListener('click', () => {
-            if (canRedirect) {
-                window.location.href = "#"; 
-            }
-        });
-    </script>
-</body>
-</html>
