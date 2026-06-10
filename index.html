@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>  ̉ı̣  ɥ        u        ʎ  ̣̂Ɐꓥ    o    ɐ S</title>
     <style>
         /* 1. TOÀN MÀN HÌNH NỀN GLITCH */
@@ -45,7 +45,34 @@
             animation: FadeToClear 6s forwards; 
         }
 
-        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ (CẤU HÌNH GỐC CHO MÁY TÍNH) */
+        /* MÀN HÌNH NHẮC NHỞ XOAY NGANG ĐIỆN THOẠI */
+        .orientation-warning {
+            display: none; /* Mặc định ẩn trên máy tính */
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #050505;
+            z-index: 9999; /* Nằm trên cùng chặn mọi thao tác */
+            color: #ff0055;
+            font-size: 16px;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            box-sizing: border-box;
+            padding: 30px;
+            letter-spacing: 1px;
+            line-height: 1.6;
+            text-shadow: 0 0 8px rgba(255, 0, 85, 0.6);
+        }
+
+        /* Biểu tượng điện thoại tự xoay ngộ nghĩnh/ma mị */
+        .phone-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            animation: rotatePhone 2s infinite ease-in-out;
+        }
+
+        /* 2. KHU VỰC HIỂN THỊ CẬU BÉ (ĐÃ FIX TỈ LỆ KHÔNG CHO TO ĐÙNG) */
         .character-container {
             position: absolute;
             bottom: 150px; 
@@ -101,40 +128,19 @@
         }
 
         /* ====================================================
-           HỆ THỐNG PHÂN GIẢI THÔNG MINH CHO DI ĐỘNG (DỌC VÀ NGANG)
+           ĐIỀU KIỆN KÍCH HOẠT MÀN HÌNH NHẮC XOAY NGANG
            ==================================================== */
-
-        /* Trường hợp 1: Thiết bị màn hình nhỏ HOẶC đang để màn hình DỌC (Portrait) */
-        @media screen and (max-width: 768px), screen and (orientation: portrait) {
-            .character-container {
-                width: 75vw;       /* Khống chế độ rộng vừa vặn 75% chiều ngang điện thoại dọc */
-                height: auto;      /* Chiều cao tự nén theo tỷ lệ ảnh gốc, không bị kéo giãn bành trướng */
-                bottom: 155px;     
-                top: auto;         
-            }
-            .character-container img {
-                width: 100%;       
-                height: auto;
-            }
-            .text-content {
-                font-size: 15px; 
-            }
-            .textbox-container {
-                min-height: 100px;
-                padding: 15px;
+        @media screen and (max-width: 768px) and (orientation: portrait) {
+            .orientation-warning {
+                display: flex; /* Chỉ hiện lên khi dùng điện thoại ở trạng thái DỌC */
             }
         }
 
-        /* Trường hợp 2: Điện thoại xoay NGANG (Landscape) */
+        /* Tối ưu một chút cho màn hình ngang điện thoại */
         @media screen and (max-width: 900px) and (orientation: landscape) {
             .character-container {
-                height: 52vh;      /* Thu thấp chiều cao lại để đỉnh đầu không bị lút khỏi cạnh trên màn hình ngang */
-                width: auto;
-                bottom: 105px;     /* Ép sát xuống gần khung chat vì màn hình ngang rất hẹp chiều cao */
-            }
-            .character-container img {
-                height: 100%;
-                width: auto;
+                height: 52vh;
+                bottom: 105px;
             }
             .textbox-container {
                 bottom: 10px;
@@ -147,6 +153,12 @@
         }
 
         /* ANIMAION KEYFRAMES */
+        @keyframes rotatePhone {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-90deg); }
+            100% { transform: rotate(0deg); }
+        }
+
         @keyframes FadeToClear {
             0% { opacity: 1; }   
             70% { opacity: 1; } 
@@ -170,6 +182,12 @@
     </style>
 </head>
 <body>
+
+    <!-- Màn hình nhắc nhở xoay ngang điện thoại -->
+    <div class="orientation-warning">
+        <div class="phone-icon">🔄</div>
+        <div>Vui lòng xoay ngang màn hình điện thoại để có trải nghiệm tốt nhất...</div>
+    </div>
 
     <div class="black-screen-overlay"></div>
 
@@ -266,16 +284,3 @@
             e.stopPropagation(); 
 
             bgMusic.pause();
-            bgMusic.volume = 0;
-            bgMusic.currentTime = 0; 
-
-            flash.style.display = 'block';
-            setTimeout(() => { flash.style.display = 'none'; }, 300);
-
-            boyImg.src = "chop-mat-2.png"; 
-            document.body.style.backgroundImage = "url('nen-luc-chet.png')";
-
-            characterBox.style.animation = "none";
-            document.body.style.animation = "none";
-
-            dialogueText.innerText = "";
