@@ -1,4 +1,14 @@
-background-image: url('nen-nhieu.gif');
-background-size: cover;
-background-position: center;
-background-repeat: repeat;
+.black-screen-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: #000000;
+    z-index: 100; 
+    pointer-events: none; /* 🛠️ Sửa lỗi 1: Ép trình duyệt cho phép click xuyên qua tấm kính này */
+    animation: FadeToClear 6s forwards; 
+}
+
+@keyframes FadeToClear {
+    0% { opacity: 1; }   
+    70% { opacity: 1; } 
+    100% { opacity: 0; visibility: hidden; } /* 🛠️ Sửa lỗi 2: Ẩn hẳn và bốc hơi hoàn toàn khỏi trang web */
+}
