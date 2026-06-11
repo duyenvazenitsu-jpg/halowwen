@@ -41,7 +41,7 @@
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000000;
             z-index: 100; 
-            pointer-events: none; 
+            pointer-events: none; /* KHÔNG chặn click chuột của người chơi */
             animation: FadeToClear 6s forwards; 
         }
 
@@ -127,14 +127,14 @@
         @media (pointer: coarse) and (orientation: portrait) {
             .orientation-warning {
                 display: flex; 
-                pointer-events: auto; 
+                pointer-events: auto; /* Chặn click khi điện thoại đang để dọc */
             }
         }
 
         @media (pointer: coarse) and (orientation: landscape) {
             .orientation-warning {
                 display: none;
-                pointer-events: none; 
+                pointer-events: none; /* Xả khóa khi xoay ngang */
             }
             .character-container {
                 height: 52vh;
@@ -154,7 +154,7 @@
         @keyframes FadeToClear {
             0% { opacity: 1; }   
             70% { opacity: 1; } 
-            100% { opacity: 0; visibility: hidden; } 
+            100% { opacity: 0; visibility: hidden; } /* Ẩn hẳn hoàn toàn lớp phủ sau khi mờ */
         }
 
         @keyframes NoiseFlicker {
@@ -224,9 +224,8 @@
 
         function fadeInAudio(audioElement, duration) {
             audioElement.volume = 0; 
-            // Sử dụng cơ chế chạy ngầm cô lập lệnh lỗi âm thanh để không làm đứng chữ cốt truyện
             audioElement.play().catch(err => {
-                console.log("Trình duyệt ứng dụng chặn âm thanh tự động. Hãy mở bằng Safari/Chrome.");
+                console.log("Trình duyệt chặn nhạc. Hãy mở bằng trình duyệt hệ thống.");
             });
             
             let start = null;
@@ -242,14 +241,13 @@
             window.requestAnimationFrame(step);
         }
 
-        // BÁM KHUNG CHAT ĐÃ ĐƯỢC CỨU HOÀN TOÀN KHÔNG SỢ BỊ KHÓA LỆNH
         textBox.addEventListener('click', (e) => {
             if (isDead) return;
             e.stopPropagation(); 
 
             if (currentStep === -1) {
                 dialogueText.removeAttribute('style'); 
-                fadeInAudio(bgMusic, 4000); // Thử bật nhạc ngầm, nếu lỗi app chặn thì web bỏ qua chạy tiếp chữ luôn
+                fadeInAudio(bgMusic, 4000); 
                 currentStep = 0;
                 dialogueText.innerText = dialogues[currentStep];
                 return;
@@ -278,3 +276,8 @@
 
         // SỰ KIỆN KHI BẤM CHẾT
         characterBox.addEventListener('click', (e) => {
+            if (currentStep !== dialogues.length - 1 || isDead) return;
+            isDead = true;
+            e.stopPropagation(); 
+
+            bgMusic.pause();
