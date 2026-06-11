@@ -35,13 +35,12 @@
             pointer-events: none;
         }
 
-        /* LỚP PHỦ TOÀN MÀN HÌNH: Tối thui 6 giây rồi sáng rõ dần */
+        /* LỚP PHỦ TOÀN MÀN HÌNH: Đã sửa lại cơ chế xả khóa tương tác */
         .black-screen-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #000000;
             z-index: 100; 
-            pointer-events: none; /* KHÔNG chặn click chuột của người chơi */
             animation: FadeToClear 6s forwards; 
         }
 
@@ -127,14 +126,14 @@
         @media (pointer: coarse) and (orientation: portrait) {
             .orientation-warning {
                 display: flex; 
-                pointer-events: auto; /* Chặn click khi điện thoại đang để dọc */
+                pointer-events: auto; 
             }
         }
 
         @media (pointer: coarse) and (orientation: landscape) {
             .orientation-warning {
                 display: none;
-                pointer-events: none; /* Xả khóa khi xoay ngang */
+                pointer-events: none; 
             }
             .character-container {
                 height: 52vh;
@@ -150,11 +149,13 @@
             }
         }
 
-        /* ANIMAION KEYFRAMES */
+        /* ====================================================
+           CÁC ĐOẠN HIỆU ỨNG CHUYỂN ĐỘNG (ANIMATION KEYFRAMES)
+           ==================================================== */
         @keyframes FadeToClear {
-            0% { opacity: 1; }   
-            70% { opacity: 1; } 
-            100% { opacity: 0; visibility: hidden; } /* Ẩn hẳn hoàn toàn lớp phủ sau khi mờ */
+            0% { opacity: 1; pointer-events: auto; }   
+            70% { opacity: 1; pointer-events: auto; } 
+            100% { opacity: 0; pointer-events: none; } /* Đã sửa: Ép bốc hơi tính năng chặn click khi sáng màn hình */
         }
 
         @keyframes NoiseFlicker {
@@ -175,21 +176,17 @@
 </head>
 <body>
 
-    <!-- Lớp phủ tối hù nguyên màn hình lúc đầu -->
     <div class="black-screen-overlay"></div>
 
-    <!-- Màn hình nhắc nhở xoay ngang -->
     <div class="orientation-warning">
         <div>Vui lòng xoay ngang màn hình điện thoại để có trải nghiệm tốt nhất...</div>
         <div style="font-size: 11px; color: #555; margin-top: 15px;">(Mẹo: Nếu mở trong Messenger, hãy bấm dấu 3 chấm góc trên chọn "Mở bằng trình duyệt hệ thống" để nghe được nhạc nền)</div>
     </div>
 
-    <!-- Khu vực nhân vật -->
     <div class="character-container" id="characterBox">
         <img id="boyImg" src="cau-be-binh-thuong.png" alt="Boy">
     </div>
 
-    <!-- Khung thoại Visual Novel -->
     <div class="textbox-container" id="textBox">
         <div class="text-content" id="dialogueText" style="color: #444; font-size: 14px; text-align: center;">[ Bấm vào đây để kết nối tín hiệu ]</div>
     </div>
@@ -225,7 +222,7 @@
         function fadeInAudio(audioElement, duration) {
             audioElement.volume = 0; 
             audioElement.play().catch(err => {
-                console.log("Trình duyệt chặn nhạc. Hãy mở bằng trình duyệt hệ thống.");
+                console.log("Trình duyệt chặn nhạc tự động.");
             });
             
             let start = null;
@@ -281,3 +278,7 @@
             e.stopPropagation(); 
 
             bgMusic.pause();
+            bgMusic.volume = 0;
+            bgMusic.currentTime = 0; 
+
+            flash.style.display = 'block';
